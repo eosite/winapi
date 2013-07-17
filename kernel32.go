@@ -6,7 +6,6 @@ package winapi
 
 import (
 	"syscall"
-	"unicode/utf16"
 )
 
 var (
@@ -14,7 +13,6 @@ var (
 	procGetLastError    = modKernel32.NewProc("GetLastError")
 	procGetLocaleInfo   = modKernel32.NewProc("GetLocaleInfoW")
 	procGetModuleHandle = modKernel32.NewProc("GetModuleHandleW")
-	procLoadString      = modUser32.NewProc("LoadStringW")
 )
 
 func GetLastError() uint {
@@ -43,19 +41,6 @@ func GetModuleHandle(moduleName string) HMODULE {
 	ret, _, _ := procGetModuleHandle.Call(param)
 
 	return HMODULE(ret)
-}
-
-func LoadString(inst HINSTANCE, id uint) (ret string) {
-	text := make([]uint16, 1024)
-	r, _, _ := procLoadString.Call(Ptr(inst), Ptr(id), Ptr(text), 1024)
-
-	if int(r) <= 0 {
-		ret = ""
-	} else {
-		ret = string(utf16.Decode(text[0:r]))
-	}
-
-	return
 }
 
 type (

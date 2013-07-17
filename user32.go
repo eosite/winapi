@@ -6,6 +6,7 @@ package winapi
 
 import (
 	"syscall"
+	"unicode/utf16"
 	"unsafe"
 )
 
@@ -28,6 +29,7 @@ var (
 	procLoadCursor         = modUser32.NewProc("LoadCursorW")
 	procLoadIcon           = modUser32.NewProc("LoadIconW")
 	procLoadMenu           = modUser32.NewProc("LoadMenuW")
+	procLoadString         = modUser32.NewProc("LoadStringW")
 	procMessageBox         = modUser32.NewProc("MessageBoxW")
 	procUnregisterClass    = modUser32.NewProc("UnregisterClassW")
 	procPostMessage        = modUser32.NewProc("PostMessageW")
@@ -186,6 +188,19 @@ func LoadMenu(instRes HINSTANCE, name string) HMENU {
 	ret, _, _ := procLoadMenu.Call(Ptr(instRes), resourceNameToPtr(name))
 
 	return HMENU(ret)
+}
+
+func LoadString(inst HINSTANCE, id uint) (ret string) {
+	text := make([]uint16, 1024)
+	r, _, _ := procLoadString.Call(Ptr(inst), Ptr(id), Ptr(text), 1024)
+
+	if int(r) <= 0 {
+		ret = ""
+	} else {
+		ret = string(utf16.Decode(text[0:r]))
+	}
+
+	return
 }
 
 func MessageBox(parent HWND, text, title string, boxType uint) int {
