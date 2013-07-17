@@ -24,6 +24,7 @@ type (
 	DWORD     uint32
 	LRESULT   int
 	COLORREF  uint32
+	LANGID    uint16
 )
 
 type Point struct {

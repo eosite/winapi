@@ -56,15 +56,15 @@ type PaintStruct struct {
 }
 
 func BeginPaint(h HWND, ps *PaintStruct) HDC {
-	ret, _, _ := procBeginPaint.Call(uintptr(h), uintptr(unsafe.Pointer(ps)))
+	ret, _, _ := procBeginPaint.Call(Ptr(h), Ptr(ps))
 
 	return HDC(ret)
 }
 
 func CreateDialogParam(instRes HINSTANCE, name string, parent HWND,
 	proc uintptr, param uintptr) HWND {
-	ret, _, _ := procCreateDialogParam.Call(uintptr(instRes),
-		resourceNameToPtr(name), uintptr(parent), proc, param)
+	ret, _, _ := procCreateDialogParam.Call(Ptr(instRes),
+		resourceNameToPtr(name), Ptr(parent), proc, param)
 
 	return HWND(ret)
 }
@@ -94,123 +94,122 @@ type CreateWindowExParam struct {
 }
 
 func CreateWindowEx(param *CreateWindowExParam) HWND {
-	ret, _, _ := procCreateWindowEx.Call(uintptr(param.ExStyle),
-		GoStringToPtr(param.ClassName), GoStringToPtr(param.WindowName),
-		uintptr(param.Style), uintptr(param.X), uintptr(param.Y),
-		uintptr(param.Width), uintptr(param.Height), uintptr(param.Parent),
-		uintptr(param.Menu), uintptr(param.Instance), param.Param)
+	ret, _, _ := procCreateWindowEx.Call(Ptr(param.ExStyle),
+		Ptr(param.ClassName), Ptr(param.WindowName),
+		Ptr(param.Style), Ptr(param.X), Ptr(param.Y),
+		Ptr(param.Width), Ptr(param.Height), Ptr(param.Parent),
+		Ptr(param.Menu), Ptr(param.Instance), param.Param)
 
 	return HWND(ret)
 }
 
 func DefWindowProc(m *MSG) LRESULT {
-	ret, _, _ := procDefWindowProc.Call(uintptr(m.HWnd), uintptr(m.Msg),
-		uintptr(m.WParam), uintptr(m.LParam))
+	ret, _, _ := procDefWindowProc.Call(Ptr(m.HWnd), Ptr(m.Msg),
+		Ptr(m.WParam), Ptr(m.LParam))
 
 	return LRESULT(ret)
 }
 
 func DestroyWindow(h HWND) bool {
-	ret, _, _ := procDestroyWindow.Call(uintptr(h))
+	ret, _, _ := procDestroyWindow.Call(Ptr(h))
 
 	return PtrToBool(ret)
 }
 
 func DialogBoxParam(instRes HINSTANCE, name string, parent HWND,
 	proc uintptr, param uintptr) int {
-	ret, _, _ := procDialogBoxParam.Call(uintptr(instRes),
-		resourceNameToPtr(name), uintptr(parent), proc, param)
+	ret, _, _ := procDialogBoxParam.Call(Ptr(instRes),
+		resourceNameToPtr(name), Ptr(parent), proc, param)
 
 	return int(ret)
 }
 
 func DispatchMessage(m *WinMSG) LRESULT {
-	ret, _, _ := procDispatchMessage.Call(uintptr(unsafe.Pointer(m)))
+	ret, _, _ := procDispatchMessage.Call(Ptr(m))
 
 	return LRESULT(ret)
 }
 
 func EndDialog(h HWND, result int) bool {
-	ret, _, _ := procEndDialog.Call(uintptr(h), uintptr(result))
+	ret, _, _ := procEndDialog.Call(Ptr(h), Ptr(result))
 
 	return PtrToBool(ret)
 }
 
 func EndPaint(h HWND, ps *PaintStruct) bool {
-	ret, _, _ := procEndPaint.Call(uintptr(h), uintptr(unsafe.Pointer(ps)))
+	ret, _, _ := procEndPaint.Call(Ptr(h), Ptr(ps))
 
 	return PtrToBool(ret)
 }
 
 func GetDC(h HWND) HDC {
-	ret, _, _ := procGetDC.Call(uintptr(h))
+	ret, _, _ := procGetDC.Call(Ptr(h))
 
 	return HDC(ret)
 }
 
 func GetDlgItem(h HWND, id int) HWND {
-	ret, _, _ := procGetDlgItem.Call(uintptr(h), uintptr(id))
+	ret, _, _ := procGetDlgItem.Call(Ptr(h), Ptr(id))
 
 	return HWND(ret)
 }
 
 func GetMessage(m *WinMSG, h HWND, min, max UINT) bool {
-	ret, _, _ := procGetMessage.Call(uintptr(unsafe.Pointer(m)), uintptr(h),
-		uintptr(min), uintptr(max))
+	ret, _, _ := procGetMessage.Call(Ptr(m), Ptr(h), Ptr(min), Ptr(max))
 
 	return PtrToBool(ret)
 }
 
 func GetWindowLongPtr(h HWND, index int) (ret uintptr) {
 	if is64Bit {
-		ret, _, _ = procGetWindowLongPtr.Call(uintptr(h), uintptr(index))
+		ret, _, _ = procGetWindowLongPtr.Call(Ptr(h), Ptr(index))
 	} else {
-		ret, _, _ = procGetWindowLong.Call(uintptr(h), uintptr(index))
+		ret, _, _ = procGetWindowLong.Call(Ptr(h), Ptr(index))
 	}
 
 	return
 }
 
 func LoadCursor(instRes HINSTANCE, name string) HCURSOR {
-	ret, _, _ := procLoadCursor.Call(uintptr(instRes), resourceNameToPtr(name))
+	ret, _, _ := procLoadCursor.Call(Ptr(instRes), resourceNameToPtr(name))
 
 	return HCURSOR(ret)
 }
 
 func LoadIcon(instRes HINSTANCE, name string) HICON {
-	ret, _, _ := procLoadIcon.Call(uintptr(instRes), resourceNameToPtr(name))
+	ret, _, _ := procLoadIcon.Call(Ptr(instRes), resourceNameToPtr(name))
 
 	return HICON(ret)
 }
 
 func LoadMenu(instRes HINSTANCE, name string) HMENU {
-	ret, _, _ := procLoadMenu.Call(uintptr(instRes), resourceNameToPtr(name))
+	ret, _, _ := procLoadMenu.Call(Ptr(instRes), resourceNameToPtr(name))
 
 	return HMENU(ret)
 }
 
 func MessageBox(parent HWND, text, title string, boxType uint) int {
-	ret, _, _ := procMessageBox.Call(uintptr(parent), GoStringToPtr(text),
-		GoStringToPtr(title), uintptr(boxType))
+	ret, _, _ := procMessageBox.Call(Ptr(parent), Ptr(text),
+		Ptr(title), Ptr(boxType))
 
 	return int(ret)
 }
 
 func UnregisterClass(name string) bool {
-	ret, _, _ := procGetMessage.Call(GoStringToPtr(name), 0)
+	ret, _, _ := procUnregisterClass.Call(Ptr(name), 0)
 
 	return PtrToBool(ret)
 }
 
 func PostMessage(m *MSG) bool {
-	ret, _, _ := procPostMessage.Call(uintptr(m.HWnd), uintptr(m.Msg),
-		uintptr(m.WParam), uintptr(m.LParam))
+	ret, _, _ := procPostMessage.Call(Ptr(m.HWnd), Ptr(m.Msg),
+		Ptr(m.WParam), Ptr(m.LParam))
 
 	return PtrToBool(ret)
 }
 
 func PostQuitMessage(code int) {
-	procPostQuitMessage.Call(uintptr(code))
+	procPostQuitMessage.Call(Ptr(code))
 }
 
 type RegisterClassExParam struct {
@@ -253,66 +252,66 @@ func RegisterClassEx(p *RegisterClassExParam) bool {
 		icon:       p.Icon,
 		cursor:     p.Cursor,
 		background: p.Background,
-		menuName:   GoStringToPtr(p.MenuName),
-		className:  GoStringToPtr(p.ClassName),
+		menuName:   Ptr(p.MenuName),
+		className:  Ptr(p.ClassName),
 		iconSm:     p.IconSm,
 	}
 
-	ret, _, _ := procRegisterClassEx.Call(uintptr(unsafe.Pointer(&v)))
+	ret, _, _ := procRegisterClassEx.Call(Ptr(&v))
 
 	return ret != 0
 }
 
 func ReleaseDC(h HWND, hdc HDC) bool {
-	ret, _, _ := procReleaseDC.Call(uintptr(h), uintptr(hdc))
+	ret, _, _ := procReleaseDC.Call(Ptr(h), Ptr(hdc))
 
 	return ret == 1
 }
 
 func SendMessage(m *MSG) LRESULT {
-	ret, _, _ := procSendMessage.Call(uintptr(m.HWnd), uintptr(m.Msg),
-		uintptr(m.WParam), uintptr(m.LParam))
+	ret, _, _ := procSendMessage.Call(Ptr(m.HWnd), Ptr(m.Msg),
+		Ptr(m.WParam), Ptr(m.LParam))
 
 	return LRESULT(ret)
 }
 
 func SendDlgItemMessage(m *MSG, id int) LRESULT {
-	ret, _, _ := procSendDlgItemMessage.Call(uintptr(m.HWnd), uintptr(id),
-		uintptr(m.Msg), uintptr(m.WParam), uintptr(m.LParam))
+	ret, _, _ := procSendDlgItemMessage.Call(Ptr(m.HWnd), Ptr(id),
+		Ptr(m.Msg), Ptr(m.WParam), Ptr(m.LParam))
 
 	return LRESULT(ret)
 }
 
 func SetMenu(hwnd HWND, menu HMENU) bool {
-	ret, _, _ := procSetMenu.Call(uintptr(hwnd), uintptr(menu))
+	ret, _, _ := procSetMenu.Call(Ptr(hwnd), Ptr(menu))
 
 	return PtrToBool(ret)
 }
 
 func SetWindowLongPtr(h HWND, index int, value uintptr) (ret uintptr) {
 	if is64Bit {
-		ret, _, _ = procSetWindowLongPtr.Call(uintptr(h), uintptr(index), value)
+		ret, _, _ = procSetWindowLongPtr.Call(Ptr(h), Ptr(index), value)
 	} else {
-		ret, _, _ = procSetWindowLong.Call(uintptr(h), uintptr(index), value)
+		ret, _, _ = procSetWindowLong.Call(Ptr(h), Ptr(index), value)
 	}
 
 	return ret
 }
 
 func ShowWindow(h HWND, cmdShow uint) bool {
-	ret, _, _ := procShowWindow.Call(uintptr(h), uintptr(cmdShow))
+	ret, _, _ := procShowWindow.Call(Ptr(h), Ptr(cmdShow))
 
 	return PtrToBool(ret)
 }
 
 func TranslateMessage(p *WinMSG) bool {
-	ret, _, _ := procTranslateMessage.Call(uintptr(unsafe.Pointer(p)))
+	ret, _, _ := procTranslateMessage.Call(Ptr(p))
 
 	return PtrToBool(ret)
 }
 
 func UpdateWindow(h HWND) bool {
-	ret, _, _ := procUpdateWindow.Call(uintptr(h))
+	ret, _, _ := procUpdateWindow.Call(Ptr(h))
 
 	return PtrToBool(ret)
 }

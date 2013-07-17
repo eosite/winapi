@@ -7,6 +7,7 @@ package winapi
 import (
 	"errors"
 	"fmt"
+	"reflect"
 	"strconv"
 	"unicode/utf16"
 	"unsafe"
@@ -49,11 +50,32 @@ func PtrToGoString(v uintptr) string {
 	return string(utf16.Decode(vp[:size]))
 }
 
-func BoolToPtr(v bool) (ret uintptr) {
-	if v {
-		ret = uintptr(1)
-	} else {
-		ret = uintptr(0)
+func Ptr(i interface{}) (ret uintptr) {
+	v := reflect.ValueOf(i)
+	switch v.Kind() {
+	case reflect.Slice, reflect.Func, reflect.Ptr, reflect.UnsafePointer:
+		ret = v.Pointer()
+		break
+
+	case reflect.Uintptr, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uint:
+		ret = uintptr(v.Uint())
+		break
+
+	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
+		ret = uintptr(v.Int())
+		break
+
+	case reflect.String:
+		ret = GoStringToPtr(v.String())
+		break
+
+	case reflect.Bool:
+		if v.Bool() {
+			ret = 1
+		} else {
+			ret = 0
+		}
+		break
 	}
 
 	return
