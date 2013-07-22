@@ -6,6 +6,7 @@ package winapi
 
 import (
 	"syscall"
+	"unsafe"
 )
 
 var (
@@ -15,15 +16,24 @@ var (
 	procGetModuleHandle = modKernel32.NewProc("GetModuleHandleW")
 )
 
+var lastError error
+
 func GetLastError() uint {
-	ret, _, _ := procGetLastError.Call()
+	var ret uintptr
+	ret, _, lastError = procGetLastError.Call()
 
 	return uint(ret)
 }
 
+func LastError() error {
+	return lastError
+}
+
 func GetLocaleInfo(lcid LCID, lctype LCTYPE) []uint16 {
 	buf := make([]uint16, 256)
-	ret, _, _ := procGetLocaleInfo.Call(Ptr(lcid), Ptr(lctype), Ptr(buf), Ptr(256))
+	var ret uintptr
+	ret, _, lastError = procGetLocaleInfo.Call(uintptr(lcid), uintptr(lctype),
+		uintptr(unsafe.Pointer(&buf[0])), 256)
 
 	if ret > 0 {
 		return buf[:ret]
@@ -35,10 +45,11 @@ func GetLocaleInfo(lcid LCID, lctype LCTYPE) []uint16 {
 func GetModuleHandle(moduleName string) HMODULE {
 	var param uintptr = 0
 	if moduleName != "" {
-		param = GoStringToPtr(moduleName)
+		param = StringToUintptr(moduleName)
 	}
 
-	ret, _, _ := procGetModuleHandle.Call(param)
+	var ret uintptr
+	ret, _, lastError = procGetModuleHandle.Call(param)
 
 	return HMODULE(ret)
 }

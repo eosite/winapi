@@ -117,3 +117,19 @@ type LOGFONT struct {
 	LfPitchAndFamily byte
 	LfFaceName       [LF_FACESIZE]uint16
 }
+
+func RGB(r, g, b byte) COLORREF {
+	return COLORREF(r) | (COLORREF(g) << 8) | (COLORREF(b) << 16)
+}
+
+func (p COLORREF) GetRValue() byte {
+	return byte(p)
+}
+
+func (p COLORREF) GetGValue() byte {
+	return byte(p >> 8)
+}
+
+func (p COLORREF) GetBValue() byte {
+	return byte(p >> 16)
+}

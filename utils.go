@@ -5,80 +5,29 @@
 package winapi
 
 import (
-	"errors"
-	"fmt"
-	"reflect"
 	"strconv"
-	"unicode/utf16"
+	"syscall"
 	"unsafe"
 )
 
-//GetLastError to error
-func LastError(pfx string) error {
-	v := GetLastError()
-	var s string
-	if pfx == "" {
-		s = fmt.Sprintf("Last error:%d(0x%x)", v, v)
-	} else {
-		s = fmt.Sprintf("%s Last error:%d(0x%x)", pfx, v, v)
-	}
-
-	return errors.New(s)
-}
-
-func GoStringToPtr(v string) uintptr {
+func StringToUintptr(v string) uintptr {
 	if v == "" {
 		return 0
 	}
 
-	u := utf16.Encode([]rune(v))
-	u = append(u, 0)
-
-	return uintptr(unsafe.Pointer(&u[0]))
+	return uintptr(unsafe.Pointer(syscall.StringToUTF16Ptr(v)))
 }
 
-func PtrToGoString(v uintptr) string {
+func UintptrToString(v uintptr) string {
 	if v == 0 {
 		return ""
 	}
 
-	vp := (*[1 << 29]uint16)(unsafe.Pointer(v))
-	size := 0
-	for ; vp[size] != 0; size++ {
-	}
-
-	return string(utf16.Decode(vp[:size]))
+	return syscall.UTF16ToString((*[1 << 29]uint16)(unsafe.Pointer(v))[0:])
 }
 
-func Ptr(i interface{}) (ret uintptr) {
-	v := reflect.ValueOf(i)
-	switch v.Kind() {
-	case reflect.Slice, reflect.Func, reflect.Ptr, reflect.UnsafePointer:
-		ret = v.Pointer()
-		break
-
-	case reflect.Uintptr, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uint:
-		ret = uintptr(v.Uint())
-		break
-
-	case reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64, reflect.Int:
-		ret = uintptr(v.Int())
-		break
-
-	case reflect.String:
-		ret = GoStringToPtr(v.String())
-		break
-
-	case reflect.Bool:
-		if v.Bool() {
-			ret = 1
-		} else {
-			ret = 0
-		}
-		break
-	}
-
-	return
+func UTF16PtrToString(v *uint16) string {
+	return UintptrToString(uintptr(unsafe.Pointer(v)))
 }
 
 func PtrToBool(v uintptr) (ret bool) {
@@ -107,12 +56,12 @@ func resourceNameToPtr(name string) uintptr {
 	if number {
 		idNumber, err := strconv.Atoi(name)
 		if err != nil {
-			id = GoStringToPtr(name)
+			id = StringToUintptr(name)
 		} else {
 			id = uintptr(idNumber)
 		}
 	} else {
-		id = GoStringToPtr(name)
+		id = StringToUintptr(name)
 	}
 
 	return id
