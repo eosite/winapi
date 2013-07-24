@@ -51,7 +51,7 @@ var is64Bit bool = false
 type PaintStruct struct {
 	Hdc         HDC
 	FErase      BOOL
-	RcPaint     Rect
+	RcPaint     RECT
 	FRestore    BOOL
 	FIncUpdate  BOOL
 	RgbReserved [32]byte
@@ -375,7 +375,7 @@ type MSG struct {
 type WinMSG struct {
 	MSG
 	Time DWORD
-	Pt   Point
+	Pt   POINT
 }
 
 func LOWORD(v uintptr) UINT {

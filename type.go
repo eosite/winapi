@@ -27,11 +27,3 @@ type (
 	COLORREF  uint32
 	LANGID    uint16
 )
-
-type Point struct {
-	X, Y int32
-}
-
-type Rect struct {
-	Left, Top, Right, Bottom int32
-}

@@ -4,6 +4,196 @@
 
 package winapi
 
+import (
+	"syscall"
+	"unsafe"
+)
+
+var (
+	modGdi32                  = syscall.NewLazyDLL("Gdi32.dll")
+	procGetObjectW            = modGdi32.NewProc("GetObjectW")
+	procMoveToEx              = modGdi32.NewProc("MoveToEx")
+	procTextOutW              = modGdi32.NewProc("TextOutW")
+	procPolyTextOutW          = modGdi32.NewProc("PolyTextOutW")
+	procExtTextOutW           = modGdi32.NewProc("ExtTextOutW")
+	procGetTextExtentPointW   = modGdi32.NewProc("GetTextExtentPointW")
+	procGetTextExtentPoint32W = modGdi32.NewProc("GetTextExtentPoint32W")
+	procCreatePolygonRgn      = modGdi32.NewProc("CreatePolygonRgn")
+	procDPtoLP                = modGdi32.NewProc("DPtoLP")
+	procLPtoDP                = modGdi32.NewProc("LPtoDP")
+	procPolygon               = modGdi32.NewProc("Polygon")
+	procPolyline              = modGdi32.NewProc("Polyline")
+	procLineTo                = modGdi32.NewProc("LineTo")
+	procPolyBezier            = modGdi32.NewProc("PolyBezier")
+	procPolyBezierTo          = modGdi32.NewProc("PolyBezierTo")
+	procPolylineTo            = modGdi32.NewProc("PolylineTo")
+	procSetViewportExtEx      = modGdi32.NewProc("SetViewportExtEx")
+	procSetViewportOrgEx      = modGdi32.NewProc("SetViewportOrgEx")
+	procSetWindowExtEx        = modGdi32.NewProc("SetWindowExtEx")
+	procSetWindowOrgEx        = modGdi32.NewProc("SetWindowOrgEx")
+	procOffsetViewportOrgEx   = modGdi32.NewProc("OffsetViewportOrgEx")
+	procOffsetWindowOrgEx     = modGdi32.NewProc("OffsetWindowOrgEx")
+	procScaleViewportExtEx    = modGdi32.NewProc("ScaleViewportExtEx")
+	procScaleWindowExtEx      = modGdi32.NewProc("ScaleWindowExtEx")
+	procSetBitmapDimensionEx  = modGdi32.NewProc("SetBitmapDimensionEx")
+	procSetBrushOrgEx         = modGdi32.NewProc("SetBrushOrgEx")
+	procGdiFlush              = modGdi32.NewProc("GdiFlush")
+)
+
+func GetObject(h HANDLE, data []byte) []byte {
+	ret, _, _ := procGetObjectW.Call(uintptr(h), uintptr(len(data)), uintptr(unsafe.Pointer(&data[0])))
+
+	if ret > 0 {
+		return data[:ret]
+	} else {
+		return nil
+	}
+}
+
+func MoveToEx(hdc HDC, x int32, y int32, lppt *POINT) bool {
+	ret, _, _ := procMoveToEx.Call(uintptr(hdc), uintptr(x), uintptr(y), uintptr(unsafe.Pointer(lppt)))
+
+	return PtrToBool(ret)
+}
+
+func TextOutW(hdc HDC, x int32, y int32, lpString string) bool {
+	ret, _, _ := procTextOutW.Call(uintptr(hdc), uintptr(x), uintptr(y), StringToUintptr(lpString), uintptr(len(lpString)))
+
+	return PtrToBool(ret)
+}
+
+func GetTextExtentPointW(hdc HDC, lpString string, lpsz *SIZE) bool {
+	ret, _, _ := procGetTextExtentPointW.Call(uintptr(hdc), StringToUintptr(lpString), uintptr(len(lpString)), uintptr(unsafe.Pointer(lpsz)))
+
+	return PtrToBool(ret)
+}
+
+func GetTextExtentPoint32W(hdc HDC, lpString string, psizl *SIZE) bool {
+	ret, _, _ := procGetTextExtentPoint32W.Call(uintptr(hdc), StringToUintptr(lpString), uintptr(len(lpString)), uintptr(unsafe.Pointer(psizl)))
+
+	return PtrToBool(ret)
+}
+
+func CreatePolygonRgn(pts []POINT, iMode int32) HRGN {
+	ret, _, _ := procCreatePolygonRgn.Call(uintptr(unsafe.Pointer(&pts[0])), uintptr(len(pts)), uintptr(iMode))
+
+	return HRGN(ret)
+}
+
+func DPtoLP(hdc HDC, pts []POINT) bool {
+	ret, _, _ := procDPtoLP.Call(uintptr(hdc), uintptr(unsafe.Pointer(&pts[0])), uintptr(len(pts)))
+
+	return PtrToBool(ret)
+}
+
+func LPtoDP(hdc HDC, pts []POINT) bool {
+	ret, _, _ := procLPtoDP.Call(uintptr(hdc), uintptr(unsafe.Pointer(&pts[0])), uintptr(len(pts)))
+
+	return PtrToBool(ret)
+}
+
+func Polygon(hdc HDC, pts []POINT) bool {
+	ret, _, _ := procPolygon.Call(uintptr(hdc), uintptr(unsafe.Pointer(&pts[0])), uintptr(len(pts)))
+
+	return PtrToBool(ret)
+}
+
+func Polyline(hdc HDC, pts []POINT) bool {
+	ret, _, _ := procPolyline.Call(uintptr(hdc), uintptr(unsafe.Pointer(&pts[0])), uintptr(len(pts)))
+
+	return PtrToBool(ret)
+}
+
+func LineTo(hdc HDC, x int32, y int32) bool {
+	ret, _, _ := procLineTo.Call(uintptr(hdc), uintptr(x), uintptr(y))
+
+	return PtrToBool(ret)
+}
+
+func PolyBezier(hdc HDC, pts []POINT) bool {
+	ret, _, _ := procPolyBezier.Call(uintptr(hdc), uintptr(unsafe.Pointer(&pts[0])), uintptr(len(pts)))
+
+	return PtrToBool(ret)
+}
+
+func PolyBezierTo(hdc HDC, pts []POINT) bool {
+	ret, _, _ := procPolyBezierTo.Call(uintptr(hdc), uintptr(unsafe.Pointer(&pts[0])), uintptr(len(pts)))
+
+	return PtrToBool(ret)
+}
+
+func PolylineTo(hdc HDC, pts []POINT) bool {
+	ret, _, _ := procPolylineTo.Call(uintptr(hdc), uintptr(unsafe.Pointer(&pts[0])), uintptr(len(pts)))
+
+	return PtrToBool(ret)
+}
+
+func SetViewportExtEx(hdc HDC, x int32, y int32, lpsz *SIZE) bool {
+	ret, _, _ := procSetViewportExtEx.Call(uintptr(hdc), uintptr(x), uintptr(y), uintptr(unsafe.Pointer(lpsz)))
+
+	return PtrToBool(ret)
+}
+
+func SetViewportOrgEx(hdc HDC, x int32, y int32, lppt *POINT) bool {
+	ret, _, _ := procSetViewportOrgEx.Call(uintptr(hdc), uintptr(x), uintptr(y), uintptr(unsafe.Pointer(lppt)))
+
+	return PtrToBool(ret)
+}
+
+func SetWindowExtEx(hdc HDC, x int32, y int32, lpsz *SIZE) bool {
+	ret, _, _ := procSetWindowExtEx.Call(uintptr(hdc), uintptr(x), uintptr(y), uintptr(unsafe.Pointer(lpsz)))
+
+	return PtrToBool(ret)
+}
+
+func SetWindowOrgEx(hdc HDC, x int32, y int32, lppt *POINT) bool {
+	ret, _, _ := procSetWindowOrgEx.Call(uintptr(hdc), uintptr(x), uintptr(y), uintptr(unsafe.Pointer(lppt)))
+
+	return PtrToBool(ret)
+}
+
+func OffsetViewportOrgEx(hdc HDC, x int32, y int32, lppt *POINT) bool {
+	ret, _, _ := procOffsetViewportOrgEx.Call(uintptr(hdc), uintptr(x), uintptr(y), uintptr(unsafe.Pointer(lppt)))
+
+	return PtrToBool(ret)
+}
+
+func OffsetWindowOrgEx(hdc HDC, x int32, y int32, lppt *POINT) bool {
+	ret, _, _ := procOffsetWindowOrgEx.Call(uintptr(hdc), uintptr(x), uintptr(y), uintptr(unsafe.Pointer(lppt)))
+
+	return PtrToBool(ret)
+}
+
+func ScaleViewportExtEx(hdc HDC, xn int32, dx int32, yn int32, yd int32, lpsz *SIZE) bool {
+	ret, _, _ := procScaleViewportExtEx.Call(uintptr(hdc), uintptr(xn), uintptr(dx), uintptr(yn), uintptr(yd), uintptr(unsafe.Pointer(lpsz)))
+
+	return PtrToBool(ret)
+}
+
+func ScaleWindowExtEx(hdc HDC, xn int32, xd int32, yn int32, yd int32, lpsz *SIZE) bool {
+	ret, _, _ := procScaleWindowExtEx.Call(uintptr(hdc), uintptr(xn), uintptr(xd), uintptr(yn), uintptr(yd), uintptr(unsafe.Pointer(lpsz)))
+
+	return PtrToBool(ret)
+}
+
+func SetBitmapDimensionEx(hbm HBITMAP, w int32, h int32, lpsz *SIZE) bool {
+	ret, _, _ := procSetBitmapDimensionEx.Call(uintptr(hbm), uintptr(w), uintptr(h), uintptr(unsafe.Pointer(lpsz)))
+
+	return PtrToBool(ret)
+}
+
+func SetBrushOrgEx(hdc HDC, x int32, y int32, lppt *POINT) bool {
+	ret, _, _ := procSetBrushOrgEx.Call(uintptr(hdc), uintptr(x), uintptr(y), uintptr(unsafe.Pointer(lppt)))
+
+	return PtrToBool(ret)
+}
+
+func GdiFlush() bool {
+	ret, _, _ := procGdiFlush.Call()
+
+	return PtrToBool(ret)
+}
+
 const LF_FACESIZE = 32
 
 // Font weight constants
@@ -132,4 +322,16 @@ func (p COLORREF) GetGValue() byte {
 
 func (p COLORREF) GetBValue() byte {
 	return byte(p >> 16)
+}
+
+type SIZE struct {
+	Cx, Cy int32
+}
+
+type POINT struct {
+	X, Y int32
+}
+
+type RECT struct {
+	Left, Top, Right, Bottom int32
 }
