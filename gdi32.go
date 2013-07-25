@@ -58,21 +58,21 @@ func MoveToEx(hdc HDC, x int32, y int32, lppt *POINT) bool {
 	return PtrToBool(ret)
 }
 
-func TextOutW(hdc HDC, x int32, y int32, lpString string) bool {
+func TextOut(hdc HDC, x int32, y int32, lpString string) bool {
 	var ret uintptr
 	ret, _, lastError = procTextOutW.Call(uintptr(hdc), uintptr(x), uintptr(y), StringToUintptr(lpString), uintptr(len(lpString)))
 
 	return PtrToBool(ret)
 }
 
-func GetTextExtentPointW(hdc HDC, lpString string, lpsz *SIZE) bool {
+func GetTextExtentPoint(hdc HDC, lpString string, lpsz *SIZE) bool {
 	var ret uintptr
 	ret, _, lastError = procGetTextExtentPointW.Call(uintptr(hdc), StringToUintptr(lpString), uintptr(len(lpString)), uintptr(unsafe.Pointer(lpsz)))
 
 	return PtrToBool(ret)
 }
 
-func GetTextExtentPoint32W(hdc HDC, lpString string, psizl *SIZE) bool {
+func GetTextExtentPoint32(hdc HDC, lpString string, psizl *SIZE) bool {
 	var ret uintptr
 	ret, _, lastError = procGetTextExtentPoint32W.Call(uintptr(hdc), StringToUintptr(lpString), uintptr(len(lpString)), uintptr(unsafe.Pointer(psizl)))
 
