@@ -40,15 +40,11 @@ var (
 	procGdiFlush              = modGdi32.NewProc("GdiFlush")
 )
 
-func GetObject(h HANDLE, data []byte) []byte {
+func GetObject(h HANDLE, size int32, data uintptr) int32 {
 	var ret uintptr
-	ret, _, lastError = procGetObjectW.Call(uintptr(h), uintptr(len(data)), uintptr(unsafe.Pointer(&data[0])))
+	ret, _, lastError = procGetObjectW.Call(uintptr(h), uintptr(size), data)
 
-	if ret > 0 {
-		return data[:ret]
-	} else {
-		return nil
-	}
+	return int32(ret)
 }
 
 func MoveToEx(hdc HDC, x int32, y int32, lppt *POINT) bool {

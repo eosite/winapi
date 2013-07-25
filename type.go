@@ -18,6 +18,7 @@ type (
 	HPEN      HANDLE
 	HPALETTE  HANDLE
 	HBITMAP   HANDLE
+	HFONT     HANDLE
 	WPARAM    uintptr
 	LPARAM    uintptr
 	UINT      uint32
