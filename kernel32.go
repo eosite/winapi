@@ -14,6 +14,7 @@ var (
 	procGetLastError    = modKernel32.NewProc("GetLastError")
 	procGetLocaleInfo   = modKernel32.NewProc("GetLocaleInfoW")
 	procGetModuleHandle = modKernel32.NewProc("GetModuleHandleW")
+	procSetSystemPowerState = modKernel32.NewProc("SetSystemPowerState")
 )
 
 var lastError error
@@ -52,6 +53,13 @@ func GetModuleHandle(moduleName string) HMODULE {
 	ret, _, lastError = procGetModuleHandle.Call(param)
 
 	return HMODULE(ret)
+}
+
+func SetSystemPowerState(suspend, force bool) bool {
+	var ret uintptr
+	ret, _, lastError = procSetSystemPowerState.Call(BoolToPtr(suspend), BoolToPtr(force))
+
+	return PtrToBool(ret)
 }
 
 type (

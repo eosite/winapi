@@ -1065,3 +1065,7 @@ const (
 	GWL_USERDATA    = -21
 	GWLP_USERDATA   = -21
 )
+
+const (
+  HWND_BROADCAST  = HWND(0xffff)
+)

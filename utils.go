@@ -40,6 +40,16 @@ func PtrToBool(v uintptr) (ret bool) {
 	return ret
 }
 
+func BoolToPtr(v bool) (ret uintptr) {
+	if v {
+		ret = 1
+	} else {
+		ret = 0
+	}
+
+	return
+}
+
 func allNumber(s string) bool {
 	for _, v := range s {
 		if !(v >= '0' && v <= '9') {
